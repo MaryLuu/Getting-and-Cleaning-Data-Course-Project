@@ -46,8 +46,10 @@ dim(Y_tr_ts)
 
 s <- rbind(s_tr, s_ts)
 head(s)
+colnames(s) <- "subject"
 
 # Extracts only the measurements on the mean and standard deviation for each measurement. 
+
 Fe <- read.table("./features.txt")
 head(Fe)
 
@@ -56,7 +58,7 @@ Mean_SD <- grep("-mean\\(\\)|-std\\(\\)", Fe$V2)
 X_Mean_Sd <- X_tr_ts[ ,Mean_SD]
 
 names(X_Mean_Sd) <- Fe[Mean_SD, 2]
-names(X_Mean_Sd) <- gsub("\\(|\\)", "", names(X_Mean_Sd))
+names(X_Mean_Sd) <-gsub("\\(|\\)", "", tolower(names(X_Mean_Sd)))
 head(X_Mean_Sd)
 
 # Mean_X_tr_ts <- sapply(X_tr_ts, mean)
@@ -68,22 +70,20 @@ head(X_Mean_Sd)
 
 activ <- read.table('./activity_labels.txt')
 activ
-activ[, 2] <- gsub("_", "", activ[, 2])
+activ[, 2] <- gsub("_", "", as.character(activ[, 2]))
 Y_tr_ts[, 1] <- activ[Y_tr_ts[, 1], 2]
- <- activ_descrip
 colnames(Y_tr_ts) <- "act"
 
 # Appropriately labels the data set with descriptive variable names. 
 
-colnames(s) <- "subject"
+
 new_table <- cbind(s, X_Mean_Sd, Y_tr_ts)
 
-# dim(new_table)
-# head(new_table)
+head(new_table)
 # dim(s)
 # dim(Y_tr_ts)
 # dim(new_table)
 # Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
 average <- aggregate(new_table, by=list(activ=new_table$act, s=new_table$subject), mean)
-write.table(average, './average.txt')
+write.table(average, './average_1.txt')
